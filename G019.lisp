@@ -48,17 +48,24 @@
 				(when (not foundQueen)
 					(return))))
 		;Procurar a coluna a inserir
-		(dotimes (j (array-dimension tabuleiro 0))
-			(let ((gerouSucessor nil))
-				(dolist (rainha rainhas)
-					(when (not gerouSucessor)
-						(if (ameaca? (make-posicao :x linha-a-inserir :y j) rainha)
-							(return)
-							(let ((tabuleiro-copia (copy-array tabuleiro)))
-								(progn
-									(setf (aref tabuleiro-copia linha-a-inserir j) "T")
-									(setf sucessores (cons tabuleiro-copia sucessores))
-									(setf gerouSucessor 1))))))))
+
+		(if rainhas
+			(dotimes (j (array-dimension tabuleiro 0))
+				(let ((gerouSucessor nil))
+					(dolist (rainha rainhas)
+						(when (not gerouSucessor)
+							(if (ameaca? (make-posicao :x linha-a-inserir :y j) rainha)
+								(return)
+								(let ((tabuleiro-copia (copy-array tabuleiro)))
+									(progn
+										(setf (aref tabuleiro-copia linha-a-inserir j) "T")
+										(setf sucessores (cons tabuleiro-copia sucessores))
+										(setf gerouSucessor 1))))))))
+			(dotimes (j (array-dimension tabuleiro 0))
+				(let ((tabuleiro-copia (copy-array tabuleiro)))
+					(progn
+						(setf (aref tabuleiro-copia linha-a-inserir j) "T")
+						(setf sucessores (cons tabuleiro-copia sucessores))))))
 		sucessores)))
 
 (defun imprime-tabuleiro (tabuleiro)
@@ -67,9 +74,7 @@
 			(format t "~%")
 			(dotimes (j (array-dimension tabuleiro 1))
 				(format t "~a "(aref tabuleiro i j))))))
-		
 
-(imprime-tabuleiro (make-array '(5 5)))
 
 (coloca-rainha (make-array '(5 5)))
 
