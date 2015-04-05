@@ -59,8 +59,10 @@
 									(setf (aref tabuleiro-copia linha-a-inserir j) "T")
 									(setf sucessores (cons tabuleiro-copia sucessores))
 									(setf gerouSucessor 1))))))))
-		(sucessores))))
+		sucessores)))
 
+
+(coloca-rainha (make-array '(5 5)))
 
 
 ; (defun remove-rainha (rainha-pos tabuleiro)
