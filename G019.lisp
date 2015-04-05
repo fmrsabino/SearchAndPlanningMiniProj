@@ -61,6 +61,15 @@
 									(setf gerouSucessor 1))))))))
 		sucessores)))
 
+(defun imprime-tabuleiro (tabuleiro)
+	(dotimes (i (array-dimension tabuleiro 0))
+		(progn
+			(format t "~%")
+			(dotimes (j (array-dimension tabuleiro 1))
+				(format t "~a "(aref tabuleiro i j))))))
+		
+
+(imprime-tabuleiro (make-array '(5 5)))
 
 (coloca-rainha (make-array '(5 5)))
 
