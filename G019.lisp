@@ -8,15 +8,21 @@
 
 ;Predicados
 (defun estado-objectivo? (tabuleiro)
-	(let ((nQueens 0))
-		(progn
-			(dotimes (i (array-dimension tabuleiro 0))
+	(let ((nQueens 0)
+		(foundQueen nil))
+	(progn
+		(dotimes (i (array-dimension tabuleiro 0))
+			(progn
+				(setf foundQueen nil)
 				(dotimes (j (array-dimension tabuleiro 1))
-					(if (equal (aref tabuleiro i j) "T")
+					(when (equal (aref tabuleiro i j) "T")
 						(progn
+							(setf foundQueen 1)
 							(incf nQueens)
-							(return)))))
-			(= nQueens (array-dimension tabuleiro 0)))))
+							(return))))
+				(when (not foundQueen)
+					(return-from estado-objectivo? nil))))
+		(= nQueens (array-dimension tabuleiro 0)))))
 
 (defun ameaca? (rainha1-pos rainha2-pos)
 	(or (= (posicao-x rainha1-pos) (posicao-x rainha2-pos))
@@ -49,7 +55,7 @@
 					(return))))
 		;Procurar a coluna a inserir
 		(if rainhas
-			(dotimes (j (array-dimension tabuleiro 0))
+			(dotimes (j (array-dimension tabuleiro 1))
 				(progn
 					(let ((ameaca nil))
 						(dolist (rainha rainhas)
@@ -62,7 +68,7 @@
 								(progn
 									(setf (aref tabuleiro-copia linha-a-inserir j) "T")
 									(setf sucessores (cons tabuleiro-copia sucessores))))))))
-			(dotimes (j (array-dimension tabuleiro 0))
+			(dotimes (j (array-dimension tabuleiro 1))
 				(let ((tabuleiro-copia (copy-array tabuleiro)))
 					(progn
 						(setf (aref tabuleiro-copia linha-a-inserir j) "T")
@@ -77,9 +83,9 @@
 				(format t "~a "(aref tabuleiro i j))))))
 
 (defun resolve-problema (estado-inicial procura-str)
-  (let* ((operadores (list #'coloca-rainha))
-         (problema (cria-problema estado-inicial operadores :objectivo? #'estado-objectivo?)))
-  (procura problema procura-str)))
+	(let* ((operadores (list #'coloca-rainha))
+		(problema (cria-problema estado-inicial operadores :objectivo? #'estado-objectivo?)))
+	(procura problema procura-str)))
 
 ; (coloca-rainha (make-array '(5 5) :initial-contents '(
 ; 	(nil nil "T" nil nil)
