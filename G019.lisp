@@ -38,22 +38,22 @@
 		(foundQueen nil)
 		(nlinhas (array-dimension tabuleiro 0)))
 
-		(progn
+	(progn
 
-			(when (estado-objectivo? tabuleiro)
-				(return-from heuristica1 0))
+		(when (estado-objectivo? tabuleiro)
+			(return-from heuristica1 0))
 			;contar o numero de rainhas
-		(dotimes (i (array-dimension tabuleiro 0))
-			(progn
-				(setf foundQueen nil)
-				(dotimes (j (array-dimension tabuleiro 1))
-					(if (equal (aref tabuleiro i j) "T")
-						(progn 
-							(setf rainhas (cons (make-posicao :x i :y j) rainhas))
-							(setf foundQueen 1)
-							(return))))
-				(when (not foundQueen)
-					(return))))
+			(dotimes (i (array-dimension tabuleiro 0))
+				(progn
+					(setf foundQueen nil)
+					(dotimes (j (array-dimension tabuleiro 1))
+						(if (equal (aref tabuleiro i j) "T")
+							(progn 
+								(setf rainhas (cons (make-posicao :x i :y j) rainhas))
+								(setf foundQueen 1)
+								(return))))
+					(when (not foundQueen)
+						(return))))
 
 		;contar o numero de casas atacadas na ultima linha
 		(if rainhas
@@ -67,7 +67,45 @@
 									(return))))))
 				(return-from heuristica1 (/ casas-atacadas (length rainhas))))
 			(return-from heuristica1 99999)))))
+
+;numero de casas livres
+(defun heuristica2 (tabuleiro)
+	(let ((casas-atacadas 0)
+		(rainhas '())
+		(foundQueen nil)
+		(startLine 0)
+		(nlinhas (array-dimension tabuleiro 0)))
+
+	(progn
+		(when (estado-objectivo? tabuleiro)
+			(return-from heuristica2 0))
+
+		;Procurar a linha a inserir
+		(dotimes (i (array-dimension tabuleiro 0))
+			(progn
+				(setf foundQueen nil)
+				(dotimes (j (array-dimension tabuleiro 1))
+					(if (equal (aref tabuleiro i j) "T")
+						(progn 
+							(incf startLine)
+							(setf rainhas (cons (make-posicao :x i :y j) rainhas))
+							(setf foundQueen 1)
+							(return))))
+				(when (not foundQueen)
+					(return))))
 		
+		;Contar o numero de casas livres a partir da linha
+		(loop for i from startLine to (- nlinhas 1) do
+			(dotimes (j (array-dimension tabuleiro 1))
+				(dolist (rainha rainhas)
+					(when (ameaca? (make-posicao :x i :y j) rainha)
+						(progn
+							(incf casas-atacadas)
+							(return))))))
+		(let ((casas-totais (* (- nlinhas startLine) (array-dimension tabuleiro 1))))
+			(return-from heuristica2 (- casas-totais casas-atacadas))))))
+
+
 
 ;Operadores
 (defun coloca-rainha (tabuleiro)
@@ -121,7 +159,7 @@
 
 (defun resolve-problema (estado-inicial procura-str)
 	(let* ((operadores (list #'coloca-rainha))
-		(problema (cria-problema estado-inicial operadores :objectivo? #'estado-objectivo? :heuristica #'heuristica1)))
+		(problema (cria-problema estado-inicial operadores :objectivo? #'estado-objectivo? :heuristica #'heuristica2)))
 	(procura problema procura-str)))
 
 ; (coloca-rainha (make-array '(5 5) :initial-contents '(
