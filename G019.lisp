@@ -39,6 +39,9 @@
 		(nlinhas (array-dimension tabuleiro 0)))
 
 		(progn
+
+			(when (estado-objectivo? tabuleiro)
+				(return-from heuristica1 0))
 			;contar o numero de rainhas
 		(dotimes (i (array-dimension tabuleiro 0))
 			(progn
@@ -62,10 +65,8 @@
 								(progn
 									(incf casas-atacadas)
 									(return))))))
-				(/ casas-atacadas (length rainhas)))
-			99999)))
-
-			)
+				(return-from heuristica1 (/ casas-atacadas (length rainhas))))
+			(return-from heuristica1 99999)))))
 		
 
 ;Operadores
