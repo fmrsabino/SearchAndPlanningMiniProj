@@ -19,10 +19,10 @@
 			(= nQueens (array-dimension tabuleiro 0)))))
 
 (defun ameaca? (rainha1-pos rainha2-pos)
-	(or (= (posicao-x rainha1-pos) (posicao-x rainha2-pos)
+	(or (= (posicao-x rainha1-pos) (posicao-x rainha2-pos))
 		(= (posicao-y rainha1-pos) (posicao-y rainha2-pos))
 		(= (- (posicao-x rainha1-pos) (posicao-y rainha1-pos)) (- (posicao-x rainha2-pos) (posicao-y rainha2-pos)))
-		(= (+ (posicao-x rainha1-pos) (posicao-y rainha1-pos)) (+ (posicao-x rainha2-pos) (posicao-y rainha2-pos))))))
+		(= (+ (posicao-x rainha1-pos) (posicao-y rainha1-pos)) (+ (posicao-x rainha2-pos) (posicao-y rainha2-pos)))))
 
 ; (defun rainha-em-conflito? (rainha-pos tabuleiro))
 
@@ -48,19 +48,20 @@
 				(when (not foundQueen)
 					(return))))
 		;Procurar a coluna a inserir
-
 		(if rainhas
 			(dotimes (j (array-dimension tabuleiro 0))
-				(let ((gerouSucessor nil))
-					(dolist (rainha rainhas)
-						(when (not gerouSucessor)
-							(if (ameaca? (make-posicao :x linha-a-inserir :y j) rainha)
-								(return)
-								(let ((tabuleiro-copia (copy-array tabuleiro)))
-									(progn
-										(setf (aref tabuleiro-copia linha-a-inserir j) "T")
-										(setf sucessores (cons tabuleiro-copia sucessores))
-										(setf gerouSucessor 1))))))))
+				(progn
+					(let ((ameaca nil))
+						(dolist (rainha rainhas)
+							(when (ameaca? (make-posicao :x linha-a-inserir :y j) rainha)
+								(progn
+									(setf ameaca 1)
+									(return))))
+						(when (not ameaca)
+							(let ((tabuleiro-copia (copy-array tabuleiro)))
+								(progn
+									(setf (aref tabuleiro-copia linha-a-inserir j) "T")
+									(setf sucessores (cons tabuleiro-copia sucessores))))))))
 			(dotimes (j (array-dimension tabuleiro 0))
 				(let ((tabuleiro-copia (copy-array tabuleiro)))
 					(progn
@@ -76,7 +77,12 @@
 				(format t "~a "(aref tabuleiro i j))))))
 
 
-(coloca-rainha (make-array '(5 5)))
+(coloca-rainha (make-array '(5 5) :initial-contents '(
+	(nil nil "T" nil nil)
+	(nil nil nil nil nil)
+	(nil nil nil nil nil)
+	(nil nil nil nil nil)
+	(nil nil nil nil nil))))
 
 
 ; (defun remove-rainha (rainha-pos tabuleiro)
