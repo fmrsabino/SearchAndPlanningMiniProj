@@ -7,7 +7,7 @@
 	y)
 
 ;Predicados
-(defun estado-objectivo (tabuleiro)
+(defun estado-objectivo? (tabuleiro)
 	(let ((nQueens 0))
 		(progn
 			(dotimes (i (array-dimension tabuleiro 0))
@@ -61,13 +61,11 @@
 							(let ((tabuleiro-copia (copy-array tabuleiro)))
 								(progn
 									(setf (aref tabuleiro-copia linha-a-inserir j) "T")
-									(imprime-tabuleiro tabuleiro-copia)
 									(setf sucessores (cons tabuleiro-copia sucessores))))))))
 			(dotimes (j (array-dimension tabuleiro 0))
 				(let ((tabuleiro-copia (copy-array tabuleiro)))
 					(progn
 						(setf (aref tabuleiro-copia linha-a-inserir j) "T")
-						(imprime-tabuleiro tabuleiro-copia)
 						(setf sucessores (cons tabuleiro-copia sucessores))))))
 		sucessores)))
 
@@ -78,39 +76,23 @@
 			(dotimes (j (array-dimension tabuleiro 1))
 				(format t "~a "(aref tabuleiro i j))))))
 
-
-(coloca-rainha (make-array '(5 5) :initial-contents '(
-	(nil nil nil nil nil)
-	(nil nil nil nil nil)
-	(nil nil nil nil nil)
-	(nil nil nil nil nil)
-	(nil nil nil nil nil))))
-
-(print (estado-objectivo (make-array '(5 5) :initial-contents '(
-	("T" nil nil nil nil)
-	(nil "T" nil nil nil)
-	(nil nil "T" nil nil)
-	(nil nil nil "T" nil)
-	(nil nil nil nil "T")))))
-
-
 (defun resolve-problema (estado-inicial procura-str)
   (let* ((operadores (list #'coloca-rainha))
-         (problema (cria-problema estado-inicial operadores :objectivo? #'estado-objectivo)))
+         (problema (cria-problema estado-inicial operadores :objectivo? #'estado-objectivo?)))
   (procura problema procura-str)))
 
-;(resolve-problema (make-array '(20 20) 'profundidade))
+; (coloca-rainha (make-array '(5 5) :initial-contents '(
+; 	(nil nil "T" nil nil)
+; 	(nil nil nil nil nil)
+; 	(nil nil nil nil nil)
+; 	(nil nil nil nil nil)
+; 	(nil nil nil nil nil))))
 
+; (print (estado-objectivo (make-array '(5 5) :initial-contents '(
+; 	("T" nil nil nil nil)
+; 	(nil "T" nil nil nil)
+; 	(nil nil "T" nil nil)
+; 	(nil nil nil "T" nil)
+; 	(nil nil nil nil "T")))))
 
-; (defun remove-rainha (rainha-pos tabuleiro)
-; 	(setf (aref tabuleiro (posicao-x rainha-pos) (posicao-y rainha-pos)) nil))
-
-; (defun resolve-problema (tabuleiro funcao)
-; 	(let ((problema (cria-problema tabuleiro)
-; 		))))
-
-; (make-array '(5 5) :initial-contents '((nil nil nil nil nil)
-; 									   (nil nil nil nil nil)
-; 									   (nil nil nil nil nil)
-; 									   (nil nil nil nil nil)
-; 									   (nil nil nil T nil)))
+;(resolve-problema (make-array '(20 20)) 'profundidade)
